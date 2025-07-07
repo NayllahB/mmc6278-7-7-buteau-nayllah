@@ -1,0 +1,50 @@
+{{> header}}
+<main>
+  <h2>Cart</h2>
+  <p>
+    <a href="/">Return to Store Page</a>
+  </p>
+  <section id="cart">
+    <div class="cart-items">
+      {{#each cartItems}}
+        <div class="cart-item">
+          <a
+            href="/product/{{inventoryId}}"
+            class="cart-item-info">
+            <img src="/images/{{image}}" alt="{{name}}" />
+            <div>
+              <p>{{name}}</p>
+              <p>${{price}}</p>
+            </div>
+          </a>
+          <div class="cart-item-subtotal">
+            <div class="cart-item-controls">
+              <label>
+                Quantity
+                <input
+                  data-cart-id="{{id}}"
+                  type="number"
+                  min="0"
+                  max="{{inventoryQuantity}}"
+                  value="{{quantity}}" />
+              </label>
+              <button
+                class="remove-from-cart"
+                data-cart-id="{{id}}">
+                Remove
+              </button>
+            </div>
+            <p>${{calculatedPrice}}</p>
+          </div>
+        </div>
+        <hr />
+      {{/each}}
+      <div class="cart-total">
+        <p>Total:</p>
+        <p>${{total}}</p>
+      </div>
+      <button id="emptyCart">Empty Cart</button>
+    </div>
+  </section>
+</main>
+{{> footer}}

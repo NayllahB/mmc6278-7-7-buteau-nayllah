@@ -1,0 +1,17 @@
+{{> header}}
+<main>
+  <h2>Items for Sale</h2>
+  <section id="saleItems">
+    {{#each items}}
+      <a href="/product/{{id}}" class="sale-item">
+        <div class="item-img-container">
+          <img src="images/{{image}}" alt="{{name}}" />
+          <p>{{description}}</p>
+        </div>
+        <p>{{name}}</p>
+        <p>${{price}}</p>
+      </a>
+    {{/each}}
+  </section>
+</main>
+{{> footer}}

@@ -1,0 +1,17 @@
+<header>
+  <div class="header-container">
+    <a href="/">
+      <h1 class="logo">Music Shop🎸</h1>
+    </a>
+    {{#if loggedIn}}
+      <div class="header-links">
+        {{#if cartCount}}
+          <a href="/cart" class="cart-link">Cart ({{cartCount}})</a>
+        {{/if}}
+        <a href="/api/logout">Logout</a>
+      </div>
+    {{else}}
+      <a href="/login">Login</a>
+    {{/if}}
+  </div>
+</header>

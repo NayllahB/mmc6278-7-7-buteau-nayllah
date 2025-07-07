@@ -1,0 +1,17 @@
+{{> header}}
+<main>
+  <h2>Login</h2>
+  <form id="loginForm" class="account-form" action="/api/login" method="POST">
+    <div class="input-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required>
+    </div>
+    <div class="input-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+    <button>Submit</button>
+    <a href="/create-account">Create Account</a>
+  </form>
+</main>
+{{> footer}}
