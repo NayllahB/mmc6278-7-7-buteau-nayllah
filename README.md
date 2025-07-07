@@ -1,1 +1,2 @@
-# mmc6278-7-7-buteau-nayllah
+# Module 7 Assignment: User Login
+Add a authentication strategy to a Node server application
