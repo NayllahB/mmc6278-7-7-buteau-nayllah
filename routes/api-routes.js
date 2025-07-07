@@ -90,32 +90,73 @@ router
 
 // This route should create a new User
 router.post('/user', async (req, res) => {
-  const {username, password} = req.body
-  // if the username or password is not provided, return a 400 status
-  // hash the password using bcrypt.hash and use 10 salt rounds
-  // then insert the username and hashed password into the users table
-  // and redirect the user to the /login page
+   try{
+     const {username, password} = req.body
+    // if the username or password is not provided, return a 400 status
+    if (!(username && password))
+      return res.status(400).send('must include username/password')
 
-  // if an error occurs with a code property equal to 'ER_DUP_ENTRY'
-  // return a 409 status code (the user exists already)
-  // for any other error, return a 500 status
+    // hash the password using bcrypt.hash and use 10 salt rounds
+    const hash = await bcrypt.hash(password,10)
+
+    // then insert the username and hashed password into the users table
+    await db.query(
+      `INSERT INTO users (username, password) VALUES (?, ?)`,
+      [username, hash]
+    )
+
+    // and redirect the user to the /login page
+    res.redirect('/login')
+  } catch (err) {
+    // if an error occurs with a code property equal to 'ER_DUP_ENTRY'
+    if (err.code === 'ER_DUP_ENTRY')
+      // return a 409 status code (the user exists already)
+      return res.status(409).send('User already exists')
+    // for any other error, return a 500 status
+    res.status(500).send('Error creating user: ' + err.message || err.sqlMessage)
+  }
 })
 
 // This route will log the user in and create the session
 router.post('/login', async (req, res) => {
-  const {username, password} = req.body
+  try {
+  const {username, password} = req.body 
   // if the username or password is not provided, return a 400 status
-  // Query the database by the username for the user
-  // If no user is found, return a 400 status code
-  // If the user is found, use bcrypt.compare to compare the password to the hash
-  // If the password is wrong, return a 400 status code
-  // If the password matches, set req.session.loggedIn to true
-  // set req.session.userId to the user's id
-  // call req.session.save and in the callback redirect to /
+  if (!(username && password))
+      return res.status(400).send('must include username/password')
+
+    // Query the database by the username for the user
+    const [[user]] = await db.query(
+      `SELECT * FROM users WHERE username=?`,
+      username
+    )
+    // If no user is found, return a 400 status code
+    if(!user)
+      return res.status(400).send('User not found')
+
+    // If the user is found, use bcrypt.compare to compare the password to the hash
+    const isCorrectPassword = await bcrypt.compare(password, user.password)
+
+    // If the password is wrong, return a 400 status code
+    if (!isCorrectPassword)
+      return res.status(400).send('Password is incorrect')
+
+    // If the password matches, set req.session.loggedIn to true
+    req.session.loggedIn = true
+
+    // set req.session.userId to the user's id
+    req.session.userId = user.id
+
+    // call req.session.save and in the callback redirect to /
+    req.session.save(() => res.redirect('/'))
+  } catch(err){
+    res.status(500).send('Error creating user: ' + err.message || err.sqlMessage)
+  }
 })
 
 router.get('/logout', async (req, res) => {
-  // call req.session.destroy and in the callback redirect to /
+ // call req.session.destroy and in the callback redirect to /
+  req.session.destroy(() => res.redirect('/'))
 })
 
 module.exports = router
